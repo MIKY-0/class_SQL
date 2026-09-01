@@ -1,0 +1,42 @@
+-- -------------------------DDL-------------------------
+
+CREATE DATABASE SCHOOL;
+
+USE  SCHOOL;
+-- 테이블 생성
+CREATE TABLE STUDENT(
+	STUDENT_ID INT PRIMARY KEY,
+    NAME  VARCHAR(50) NOT NULL,
+    GRADE INT NOT NULL,
+    MAJOR VARCHAR(50) NOT NULL,
+    PHONE VARCHAR(20)
+);
+
+ -- DDL 컬럼 추가 명령.
+ ALTER TABLE student ADD COLUMN EMAIL VARCHAR(100);
+ 
+ -- DDL 컬럼 수정(타입이나 길이만 수정 - MODIFY) 명령.
+ -- PHONE 길이 20 -> 30
+ ALTER TABLE STUDENT MODIFY COLUMN PHONE VARCHAR(30);
+ 
+ -- DDL 컬럼 수정(이름까지 변경 - CHANGE) 명령.
+ -- EMAIL -> EMAIL_ADDRESS  +  길이 150.
+ ALTER TABLE STUDENT CHANGE COLUMN EMAIL EMAIL_ADDRESS VARCHAR(150) NOT NULL;
+ 
+ -- DDL 컬럼 수정(이름만 변경 - RENAME) 명령.
+ ALTER TABLE STUDENT RENAME COLUMN  EMAIL_ADDRESS TO EMAIL;
+ 
+ -- DDL 컬럼 삭제.
+ ALTER TABLE STUDENT DROP COLUMN EMAIL;
+ 
+ -- DDL 테이블 삭제.
+ DROP TABLE STUDENT;
+ 
+ -- DDL 데이터베이스 삭제.
+ DROP DATABASE SCHOOL;
+ DROP DATABASE DB_TENCO_MARKET;
+ 
+ 
+ -- ---------------------------------------테이블 구조 확인---------------------------------------
+DESC STUDENT;
+SELECT * FROM STUDENT;
