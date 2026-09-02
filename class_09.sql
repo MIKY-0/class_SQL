@@ -1,63 +1,83 @@
-USE EMPLOYEES;
+-- 앞 차시에서 만든 order 테이블이 남아있으면 지우고 시작
+DROP TABLE IF EXISTS `order`;
 
--- DB 파악 , 어떤 테이블이 존재하고 어떤의미인지 파악.
--- 1일1쿼리 진행(스스로 문제 만들기) -- 디스코드 SQL 연습문제 채널에 올리기.
--- 단, EMPLYEES DB 안에서 문제만들기(진도 기준으로 1문제씩 올리기. 어렵지 않게.)
+CREATE TABLE `order` (
+  id INT PRIMARY KEY,
+  order_name VARCHAR(20) NOT NULL,
+  product_name VARCHAR(20) NOT NULL,
+  quantity INT NOT NULL,
+  order_date DATE NOT NULL
+);
 
--- 1. employees 테입에서 홍길동이란 사람을 검색하시오
+INSERT INTO `order` (id, order_name, product_name, quantity, order_date) VALUES
+(1, '홍길동', '피자', 2, '2022-02-26'),
+(2, '김영희', '치킨', 3, '2022-02-26'),
+(3, '이철수', '햄버거', 1, '2022-02-27'),
+(4, '박지민', '스테이크', 2, '2022-02-27'),
+(5, '최영희', '짬뽕', 1, '2022-02-27'),
+(6, '박서준', '초밥', 3, '2022-02-28'),
+(7, '김민지', '파스타', 2, '2022-02-28'),
+(8, '정재은', '토스트', 1, '2022-02-28'),
+(9, '신은주', '감바스', 1, '2022-03-01'),
+(10, '유지훈', '돈까스', 1, '2022-03-01');
 
--- 2.titles 테이블에서 title이 'Senior'로 시작하고, from_date가 1990-01-01 이전인 레코드를 출력하시오.
-SELECT * FROM TITLES
-WHERE TITLE LIKE 'SENIOR%' AND FROM_DATE < 1990;
+-- 1. 단일 조건 수정.
+-- ID가 2인 주문의 수량을 4로 수정.
+UPDATE `ORDER` SET QUANTITY = 4
+WHERE ID = 2;
 
--- 3.employees 테이블에서 emp_no가 10010인 사람을 검색하세요
-SELECT * FROM EMPLOYEES
-WHERE EMP_NO = 10010;
--- 4.Salaries 테이블에서 salary가 100000 이상인 사람 조회
-SELECT * FROM SALARIES
-WHERE SALARY >= 100000;
+-- ID가 4인 상품명을 파스타로 변경.
+UPDATE `ORDER` SET PRODUCT_NAME = '파스타'
+WHERE ID = 4;
 
--- 5.dept_emp 테이블에서 to_date가 9999-01-01이 아닌 값을 출력하세요
-SELECT * FROM DEPT_EMP
-WHERE TO_DATE != '9999-01-01';
+-- ID가 5인 주문의 날짜를 2022년 03월 01일 로 변경.
+UPDATE `ORDER` SET ORDER_DATE = '20220301'
+WHERE ID = 5;
 
--- 6.EMPLOYEES 테이블에서 남자 직원들을 조회하세요
-SELECT * FROM EMPLOYEES
-WHERE BIRTH_DATE LIKE '1953%' AND GENDER = 'M';
+-- 2.복합 조건 수정
+-- 수량이 2이상이고 상품명이 '피자'인 경우 주문자를 '김철수'로 변경.
+UPDATE `ORDER` SET ORDER_NAME = '김철수'
+WHERE QUANTITY >= 2 AND PRODUCT_NAME = '피자';
 
--- 7.employees 테이블에서 birth_date 가 9월인 사람을 출력하시오.
-SELECT * FROM EMPLOYEES
-WHERE BIRTH_DATE LIKE '%-09-%';
+-- 주문일이 2022-02-28이고 상품이 '초밥'인 경우 수량을 6으로 변경.
+UPDATE `ORDER` SET QUANTITY = 6
+WHERE ORDER_DATE = '2022-02-28' AND PRODUCT_NAME = '초밥';
 
--- 8.employees 테이블에서 gender가 M인 first_name과 last_name만 출력하시오.
-SELECT FIRST_NAME , LAST_NAME FROM EMPLOYEES
-WHERE GENDER = 'M';
-
--- 9.employees 테이블에서 emp_n가 10111인 사람을 검색하시오.
-
-
--- 10.salaries 테이블에서 from_date가 2000-01-01 이전이고 to_date가 2000-01-01 이후인 salary만 출력해주세요.
-
-
--- 11. titles 테이블에서 from_date가  2001-10-11 일부터  2001-10-15 일 까지  인  titles  조회.
-
-
--- 12.employees의 departments 테이블을 활용하여 부서번호 d001에서 d009까지만 조회하세요.
-
-
--- 13.employees 테이블에서 여자 직원들중 birth_date가 3월인 사람을 조회하시오.
-
-
--- 14.employees 테이블에서 emp_no가 10000~10050인것중에 성별이M인것을 조회하시오.
+-- 상품명이 '토스트'이거나 '카레'인 주문의 수량을 4로 변경.
+UPDATE `ORDER` SET QUANTITY = 4
+WHERE PRODUCT_NAME = '토스트' OR PRODUCT_NAME = '카레';
 
 
--- 15.employees 테이블에서 과장인 사람을 모두 조회.
+-- 3. 테이블 구조 변경 + UPDATE
+-- ADDRESS 컬럼 추가 (최대 100글자)
+ALTER TABLE `ORDER` ADD ADDRESS VARCHAR(100);
+
+-- 수량이 1이하이고 상품이 '감바스'인 경우 주소를 '서울시 강남구'로 설정.
+UPDATE `ORDER` SET ADDRESS = '서울시 강남구'
+WHERE QUANTITY <= 1 AND PRODUCT_NAME = '감바스';
+
+-- 도전 과제 
+-- 주문일이 2022-02-26인 주문의 상품명을 '샐러드'로 변경
+UPDATE `ORDER` SET PRODUCT_NAME = '샐러드'
+WHERE ORDER_DATE = '20220226';
+
+-- 주문자가 '김민지'이고 수량이 2인 경우, 주소를 '경기도 수원시'로 수정
+UPDATE `ORDER` SET ADDRESS = '경기도 수원시'
+WHERE ORDER_NAME = '김민지' AND QUANTITY = 2;
+
+-- ID가 3부터 7인 주문들의 수량을 3으로 수정
+UPDATE `ORDER` SET QUANTITY = 3
+WHERE ID between 3 AND 7;
+
+-- 주소가 아직 없는(NULL인) 주문의 주소를 '주소 미입력'으로 채우기
+UPDATE `ORDER` SET ADDRESS = '주소 미입력'
+WHERE ADDRESS IS NULL;
 
 
 
-SELECT * FROM DEPARTMENTS;
-SELECT * FROM DEPT_MANAGER;
-SELECT * FROM DEPT_EMP;
-SELECT * FROM EMPLOYEES;
-SELECT * FROM SALARIES;
-SELECT * FROM TITLES;
+
+
+
+
+
+SELECT * FROM `ORDER`;
