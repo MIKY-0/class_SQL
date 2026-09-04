@@ -1,0 +1,89 @@
+DROP DATABASE IF EXISTS self_join;
+CREATE DATABASE self_join;
+USE self_join;
+
+CREATE TABLE employees (
+    employee_id   INT PRIMARY KEY,
+    employee_name VARCHAR(50) NOT NULL,
+    department    VARCHAR(20) NOT NULL,
+    salary        INT NOT NULL,        -- 연봉, 만원 단위
+    manager_id    INT                  -- 상급자의 employee_id. 없으면 NULL
+);
+
+INSERT INTO employees VALUES
+(1, '김민수', '경영', 9000, NULL),
+(2, '박지훈', '개발', 7000, 1),
+(3, '이서연', '영업', 6500, 1),
+(4, '최준호', '개발', 5000, 2),
+(5, '정하윤', '개발', 5500, 2),
+(6, '강도현', '영업', 4800, 3);
+
+
+-- 계층 구조 조회(셀프조인활용)
+-- 즉, 각 직원의 상급자 이름 조회.(결과 집합)
+-- 매니저 이름을 찾기위한 사본 테이블.
+SELECT E.* , M.* FROM EMPLOYEES E LEFT JOIN EMPLOYEES M ON E.MANAGER_ID = M.EMPLOYEE_ID;
+
+SELECT E.* , M.EMPLOYEE_NAME AS 상급자
+FROM EMPLOYEES E LEFT JOIN EMPLOYEES M ON E.MANAGER_ID = M.EMPLOYEE_ID;
+
+-- 셀프조인을 INNER JOIN으로 변경.
+SELECT E.* , M.EMPLOYEE_NAME AS 상급자
+FROM EMPLOYEES E INNER JOIN EMPLOYEES M ON E.MANAGER_ID = M.EMPLOYEE_ID;
+
+-- 상급자의 차상급자까지 찾기.
+SELECT E.* , M.EMPLOYEE_NAME AS 상급자 , MM.EMPLOYEE_NAME AS 차상급자
+FROM EMPLOYEES E LEFT JOIN EMPLOYEES M ON E.MANAGER_ID = M.EMPLOYEE_ID
+		 LEFT JOIN EMPLOYEES MM ON M.MANAGER_ID = MM.EMPLOYEE_ID;
+
+
+-- 용도2. 같은 테이블안에서 서로 다른 행을 비교할 수 있다.
+-- 1. 서로 같은 부서(셀프조인조건) 에서 나보다 연봉이 높은 사람(AND절 조건).
+-- ON조건을 2개 쓰는 이유 .
+-- 1. 만약 JOIN연산에 ON조건이 없으면 CROSS 조인.
+SELECT E.EMPLOYEE_NAME AS 직원 ,  E.SALARY AS '내 연봉' , H.EMPLOYEE_NAME AS '더 높은사람' , H.SALARY AS 그사람연봉
+FROM EMPLOYEES E 
+JOIN EMPLOYEES H ON E.DEPARTMENT = H.DEPARTMENT AND E.SALARY < H.SALARY
+ORDER BY E.EMPLOYEE_NAME , E.SALARY;
+			
+                        
+-- 같은 부서만 조회                        
+SELECT E.* FROM EMPLOYEES E 
+JOIN EMPLOYEES H ON E.DEPARTMENT = H.DEPARTMENT 
+WHERE E.DEPARTMENT = '개발'
+ORDER BY E.EMPLOYEE_NAME , E.SALARY;                        
+
+-- ON 조건에서 연봉만 있는 경우.
+SELECT E.* FROM EMPLOYEES E 
+JOIN EMPLOYEES H ON E.SALARY < H.SALARY -- 부서 상관없이 나보다 높은 연봉 사람 다 조합.
+WHERE E.EMPLOYEE_NAME = '강도현'
+ORDER BY E.EMPLOYEE_NAME , E.SALARY;                        
+
+-- ON과 WHERE에서 어디에 조건을 걸어야 타당한가.
+SELECT E.EMPLOYEE_NAME AS 직원 ,  E.SALARY AS '내 연봉' , H.EMPLOYEE_NAME AS '더 높은사람' , H.SALARY AS 그사람연봉
+FROM EMPLOYEES E 
+JOIN EMPLOYEES H ON E.DEPARTMENT = H.DEPARTMENT
+WHERE E.SALARY < H.SALARY
+ORDER BY E.EMPLOYEE_NAME , E.SALARY;
+
+SELECT E.EMPLOYEE_NAME AS 직원 ,  E.SALARY AS '내 연봉' , H.EMPLOYEE_NAME AS '더 높은사람' , H.SALARY AS 그사람연봉
+FROM EMPLOYEES E 
+left JOIN EMPLOYEES H ON E.DEPARTMENT = H.DEPARTMENT
+WHERE E.SALARY < H.SALARY
+ORDER BY E.EMPLOYEE_NAME , E.SALARY;
+
+
+
+
+
+
+
+SELECT E.EMPLOYEE_NAME AS 이름 , E.DEPARTMENT AS 부서 , M.EMPLOYEE_NAME AS 상급자 , M.DEPARTMENT AS 상급자부서
+FROM  EMPLOYEES E LEFT JOIN EMPLOYEES M ON E.MANAGER_ID = M.EMPLOYEE_ID;
+
+SELECT E.EMPLOYEE_ID AS 직원ID , E.EMPLOYEE_NAME AS 직원이름 , 
+	H.EMPLOYEE_ID AS 부하직원ID , H.EMPLOYEE_NAME AS '그의 부하직원' 
+FROM EMPLOYEES E  LEFT JOIN EMPLOYEES H ON E.EMPLOYEE_ID = H.MANAGER_ID;
+
+
+SELECT * FROM employees;
