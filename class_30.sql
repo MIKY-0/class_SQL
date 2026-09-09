@@ -38,3 +38,11 @@ delete from product
 where name = '애플 에어팟 프로';
 
 select * from product ;
+
+select e.emp_no , e.dept_no , d.dept_name from dept_emp e join departments d
+on e.dept_no = d.dept_no
+limit 10;
+
+
+
+
